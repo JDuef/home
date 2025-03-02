@@ -5,6 +5,7 @@ services:
     container_name: gotify
     networks:
       local:
+        ipv4_address: 172.20.0.12
     dns: 
       - 172.30.0.3
     volumes:
