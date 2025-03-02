@@ -1,0 +1,38 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:2025.2.5"
+    environment:
+     - BASE_URL_HOME=${BASE_URL_HOME}
+     - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+     - DB=${DB}
+     - DB_NAME=${DB_NAME}
+     - DEBUG=${DEBUG}
+     - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+     - EMAIL_HOST=${EMAIL_HOST}
+     - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+     - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+     - TZ=${TZ}
+     - EMAIL_PORT=${EMAIL_PORT}
+     - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+     - SECRET_KEY=${SECRET_KEY}
+     - SITE_ROOT=${SITE_ROOT}
+     - REGISTRATION_OPEN=${REGISTRATION_OPEN}
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    devices:
+      - /dev/ttyAMA0:/dev/ttyAMA0
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.homeassistant.entrypoints: "websecure" 
+      traefik.http.routers.homeassistant.rule: "Host(`homeassistant.${BASE_URL_HOME}`)"
+      traefik.http.routers.homeassistant.tls.certresolver: "myresolver"
+      traefik.http.services.homeassistant.loadbalancer.server.port: 8123
+networks:
+  local:
+    external: true

@@ -1,0 +1,2 @@
+docker network create --driver=bridge --subnet=172.20.0.0/24 --gateway=172.20.0.1 --ipv6 --subnet 2001:db8::/41 --gateway 2001:db8::1 dns
+docker network create --driver=bridge --subnet=172.30.0.0/24 --gateway=172.30.0.1 local 

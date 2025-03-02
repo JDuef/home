@@ -1,0 +1,41 @@
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2024.07.0
+    ports:
+      - 53:53/udp
+      - 53:53/tcp
+    networks:
+      local:
+        ipv4_address: 172.30.0.3
+      dns:
+        ipv4_address: 172.20.0.3
+    environment:
+     - BASE_URL_HOME=${BASE_URL_HOME}
+     - TZ=${TZ}
+     - PIHOLE_DNS_=${PIHOLE_DNS_}
+     - INTERFACE=${INTERFACE}
+     - DNSMASQ_LISTENING=${DNSMASQ_LISTENING}
+     - RATE_LIMIT=${RATE_LIMIT}
+    dns:
+      - 172.30.0.3
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-localmasq.d:/etc/localmasq.d'
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.pihole.entrypoints: "websecure" 
+      traefik.http.routers.pihole.rule: "Host(`pihole.${BASE_URL_HOME}`)"
+      traefik.http.routers.pihole.tls.certresolver: "myresolver"
+      traefik.http.services.pihole.loadbalancer.server.port: 80
+      traefik.docker.network: local
+      traefik.http.middlewares.add-admin.addprefix.prefix: /admin
+      traefik.http.routers.pihole.middlewares: add-admin@docker
+
+networks:
+  local:
+    external: true
+  dns:
+    external: true

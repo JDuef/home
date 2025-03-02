@@ -1,0 +1,39 @@
+services:
+    app:
+        image: ghcr.io/wg-easy/wg-easy:14
+        restart: unless-stopped
+        container_name: wg-easy
+        environment:
+          - UI_CHART_TYPE=${UI_CHART_TYPE}
+          - UI_TRAFFIC_STATS=${UI_TRAFFIC_STATS}
+          - WG_DEFAULT_DNS=${WG_DEFAULT_DNS}
+          - WG_ALLOWED_IPS=${WG_ALLOWED_IPS}
+          - LANG=${LANG}
+          - WG_HOST=${WG_HOST}
+          - PASSWORD_HASH=${PASSWORD_HASH}
+          - PORT=${PORT}
+          - WG_PORT=${WG_PORT}
+          - BASE_URL_HOME=${BASE_URL_HOME}
+        cap_add:
+          - NET_ADMIN
+          - SYS_MODULE
+        sysctls:
+          - net.ipv4.ip_forward=1
+          - net.ipv4.conf.all.src_valid_mark=1
+        ports:
+            - '11391:11391/udp' 
+            #- '51821:51821/tcp' 
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.wg-easy.entrypoints: "websecure" 
+          traefik.http.routers.wg-easy.rule: "Host(`wireguard.${BASE_URL_HOME}`)"
+          traefik.http.routers.wg-easy.tls.certresolver: "myresolver"
+          traefik.http.services.wg-easy.loadbalancer.server.port: 51821
+        volumes:
+        - ./.wg-easy:/etc/wireguard
+        networks:
+          local:
+            ipv4_address: 172.30.0.9
+networks:
+  local:
+    external: true

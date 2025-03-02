@@ -1,0 +1,19 @@
+services:
+  bind9:
+    container_name: bind9
+    image: ubuntu/bind9:9.18-22.04_beta
+    restart: unless-stopped
+    networks:
+      dns:
+        ipv4_address: 172.20.0.2
+    environment: 
+      - BIND9_USER=root
+      - TZ=Europe/Berlin
+    volumes:
+      - ./config:/etc/bind
+      - ./cache:/var/cache/bind
+      - ./records:/var/lib/bind
+
+networks:
+  dns:
+    external: true

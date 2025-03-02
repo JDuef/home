@@ -1,0 +1,36 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.32.4
+    container_name: vaultwarden
+    restart: unless-stopped
+    networks:
+      local:
+        ipv4_address: 172.30.0.6
+    dns:
+      - 172.30.0.3
+    environment:
+      - BASE_URL_HOME=${BASE_URL_HOME}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURITY=${SMTP_SECURITY}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - DOMAIN=${DOMAIN}
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED}
+      - SIGNUPS_VERIFY=${SIGNUPS_VERIFY}
+      - SHOW_PASSWORD_HINT=${SHOW_PASSWORD_HINT}
+      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    volumes:
+      - ./vw-data:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.vaultwarden.entrypoints: "websecure"
+      traefik.http.routers.vaultwarden.rule: "Host(`vaultwarden.${BASE_URL_HOME}`)"
+      traefik.http.routers.vaultwarden.tls.certresolver: "myresolver"
+      providers.docker.network: local
+
+networks:
+  local:
+    external: true

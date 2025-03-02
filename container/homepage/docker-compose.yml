@@ -1,0 +1,30 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    networks:
+      local:
+        ipv4_address: 172.30.0.7
+      dns: 
+        ipv4_address: 172.20.0.7
+    dns: 
+      - 172.30.0.3
+    environment:
+      PUID: 1000 
+      PGID: 1000 
+    volumes:
+      - ./config:/app/config 
+      - ./images:/app/public/images 
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.homepage.entrypoints: "websecure" 
+      traefik.http.routers.homepage.rule: "Host(`homepage.${BASE_URL_HOME}`)"
+      traefik.http.routers.homepage.tls.certresolver: "myresolver"
+      traefik.http.services.homepage.loadbalancer.server.port: 3000
+      traefik.docker.network: local
+networks:
+  local:
+    external: true
+  dns:
+    external: true
