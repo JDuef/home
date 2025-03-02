@@ -2,6 +2,7 @@ services:
   gotify:
     image: gotify/server:2.6.1
     restart: unless-stopped
+    container_name: gotify
     networks:
       local:
     dns: 
