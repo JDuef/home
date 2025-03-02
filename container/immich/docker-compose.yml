@@ -20,7 +20,7 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_DATABASE_NAME=${DB_DATABASE_NAME}
     volumes:
-      - ./library:/usr/src/app/upload
+      - /mnt/md0/smb/immich:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - redis
